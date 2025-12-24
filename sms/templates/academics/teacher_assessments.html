@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Assessments · SMS{% endblock %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+    <h3 class="mb-1">Assessments</h3>
+    <div class="text-muted">Create and manage assessments and grades.</div>
+  </div>
+  <a class="btn btn-primary" href="{% url 'academics:create_assessment' %}">Create assessment</a>
+</div>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <form method="get" class="row g-2">
+      <div class="col-12 col-md-9">
+        {{ form.q }}
+      </div>
+      <div class="col-12 col-md-3">
+        <button class="btn btn-outline-primary w-100" type="submit">Filter</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Date</th><th>Class</th><th>Subject</th><th>Title</th><th>Type</th><th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in assessments %}
+            <tr>
+              <td class="text-muted">{{ a.date }}</td>
+              <td class="fw-semibold">{{ a.class_group }}</td>
+              <td>{{ a.subject }}</td>
+              <td>{{ a.title }}</td>
+              <td><span class="badge text-bg-light">{{ a.type }}</span></td>
+              <td class="text-end">
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'academics:enter_grades' a.id %}">Enter grades</a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="6" class="text-muted p-3">No assessments yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

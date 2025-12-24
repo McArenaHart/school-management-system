@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Start Thread · SMS{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8 col-lg-6">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="mb-1">Start a Thread</h3>
+        <p class="text-muted mb-4">Open a communication thread for a student with a linked parent.</p>
+
+        <form method="post" class="vstack gap-3">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button class="btn btn-primary" type="submit">Create / Open</button>
+          <a class="btn btn-outline-secondary" href="{% url 'comms:inbox' %}">Back</a>
+        </form>
+
+        <hr>
+        <div class="text-muted small">
+          The parent must already be linked to the student (People → Link Student).
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

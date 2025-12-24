@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ title }}</h2>
+{% if note %}<p>{{ note }}</p>{% endif %}
+<table border="1" cellpadding="6">
+  <tr>
+    <th>Day</th><th>Start</th><th>End</th><th>Class</th><th>Subject</th><th>Room</th>
+  </tr>
+  {% for e in entries %}
+  <tr>
+    <td>{{ e.get_day_of_week_display }}</td>
+    <td>{{ e.start_time }}</td>
+    <td>{{ e.end_time }}</td>
+    <td>{{ e.class_group }}</td>
+    <td>{{ e.subject }}</td>
+    <td>{{ e.room }}</td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="6">No timetable entries.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

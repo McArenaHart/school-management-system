@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Upload POP · SMS{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-12 col-md-9 col-lg-6">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="mb-1">Upload Proof of Payment</h3>
+        <div class="text-muted mb-3">Invoice #{{ invoice.id }} · {{ invoice.student.student_id }}</div>
+
+        <form method="post" enctype="multipart/form-data" class="vstack gap-3">
+          {% csrf_token %}
+          <div>
+            <label class="form-label">File</label>
+            {{ form.file }}
+            <div class="form-text">Accepted: image or PDF (whatever your storage allows).</div>
+          </div>
+          <div>
+            <label class="form-label">Note (optional)</label>
+            {{ form.note }}
+          </div>
+
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary" type="submit">Upload</button>
+            <a class="btn btn-outline-secondary" href="{% url 'finance:invoice_detail' invoice.id %}">Back</a>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

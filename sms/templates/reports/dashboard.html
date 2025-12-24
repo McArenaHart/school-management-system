@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Analytics · SMS{% endblock %}
+{% block content %}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+    <h3 class="mb-1">Analytics Dashboard</h3>
+    <div class="text-muted">Overview · last 30 days ({{ last_30 }} → {{ today }})</div>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-12 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="text-muted">Students</div>
+      <div class="fs-4 fw-bold">{{ students_total }}</div>
+      <div class="text-muted small">Active: {{ students_active }}</div>
+    </div></div>
+  </div>
+
+  <div class="col-12 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="text-muted">Admissions</div>
+      <div class="fs-4 fw-bold">{{ admissions_new }}</div>
+      <div class="text-muted small">Reviewed {{ admissions_reviewed }} · Accepted {{ admissions_accepted }}</div>
+    </div></div>
+  </div>
+
+  <div class="col-12 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="text-muted">Attendance</div>
+      <div class="fs-4 fw-bold">{{ att_total }}</div>
+      <div class="text-muted small">
+        <span class="badge text-bg-success">P {{ att_present }}</span>
+        <span class="badge text-bg-warning ms-1">L {{ att_late }}</span>
+        <span class="badge text-bg-danger ms-1">A {{ att_absent }}</span>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="col-12 col-md-3">
+    <div class="card"><div class="card-body">
+      <div class="text-muted">Fees Balance</div>
+      <div class="fs-4 fw-bold">{{ balance }}</div>
+      <div class="text-muted small">Invoiced {{ invoiced_sum }} · Paid {{ paid_sum }}</div>
+    </div></div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="card">
+      <div class="card-body p-0">
+        <div class="p-3 border-bottom">
+          <h5 class="mb-0">Recent Applications</h5>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Created</th><th>Applicant</th><th>Status</th><th class="text-end">Open</th></tr></thead>
+            <tbody>
+              {% for a in recent_apps %}
+                <tr>
+                  <td class="text-muted">{{ a.created_at }}</td>
+                  <td class="fw-semibold">{{ a.last_name }}, {{ a.first_name }}</td>
+                  <td><span class="badge text-bg-light">{{ a.status }}</span></td>
+                  <td class="text-end">
+                    <a class="btn btn-sm btn-outline-primary" href="{% url 'registrar:application_detail' a.id %}">View</a>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="4" class="text-muted p-3">No applications.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-6">
+    <div class="card">
+      <div class="card-body p-0">
+        <div class="p-3 border-bottom">
+          <h5 class="mb-0">Recent Invoices</h5>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Issue</th><th>Invoice</th><th>Student</th><th>Status</th></tr></thead>
+            <tbody>
+              {% for inv in recent_invoices %}
+                <tr>
+                  <td class="text-muted">{{ inv.issue_date }}</td>
+                  <td class="fw-semibold">#{{ inv.id }}</td>
+                  <td>{{ inv.student.student_id }}</td>
+                  <td><span class="badge text-bg-light">{{ inv.status }}</span></td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="4" class="text-muted p-3">No invoices.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-body p-0">
+        <div class="p-3 border-bottom">
+          <h5 class="mb-0">Recent Absences</h5>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Date</th><th>Student</th><th>Class</th></tr></thead>
+            <tbody>
+              {% for r in recent_absences %}
+                <tr>
+                  <td class="text-muted">{{ r.date }}</td>
+                  <td class="fw-semibold">{{ r.student.student_id }}</td>
+                  <td>{{ r.class_group }}</td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="3" class="text-muted p-3">No absences recorded.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

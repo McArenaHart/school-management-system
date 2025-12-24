@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Thread · SMS{% endblock %}
+{% block content %}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+    <h3 class="mb-1">
+      {{ thread.student.first_name }} {{ thread.student.last_name }}
+      <span class="text-muted fw-normal">· {{ thread.student.student_id }}</span>
+    </h3>
+    <div class="text-muted">
+      Teacher: {{ thread.teacher_user.username }} · Parent: {{ thread.parent_user.username }}
+    </div>
+  </div>
+  <a class="btn btn-outline-secondary" href="{% url 'comms:inbox' %}">Back to inbox</a>
+</div>
+
+<div class="card mb-3">
+  <div class="card-body" style="max-height: 55vh; overflow-y: auto;">
+    {% for m in messages_qs %}
+      {% if m.sender == request.user %}
+        <div class="d-flex justify-content-end mb-2">
+          <div class="bg-primary text-white rounded-4 p-3" style="max-width: 75%;">
+            <div class="small opacity-75 mb-1 text-end">{{ m.created_at }}</div>
+            <div style="white-space: pre-wrap;">{{ m.body }}</div>
+          </div>
+        </div>
+      {% else %}
+        <div class="d-flex justify-content-start mb-2">
+          <div class="bg-white border rounded-4 p-3" style="max-width: 75%;">
+            <div class="small text-muted mb-1">
+              {{ m.sender.username }} · {{ m.created_at }}
+            </div>
+            <div style="white-space: pre-wrap;">{{ m.body }}</div>
+          </div>
+        </div>
+      {% endif %}
+    {% empty %}
+      <div class="text-muted">No messages yet. Start the conversation below.</div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-2">
+        {{ form.body }}
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary" type="submit">Send</button>
+        <a class="btn btn-outline-secondary" href="{% url 'people:student_detail' thread.student.pk %}">Student profile</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}Report · SMS{% endblock %}
+{% block content %}
+
+<div class="d-flex align-items-start justify-content-between mb-3">
+  <div>
+    <h3 class="mb-1">Student Report</h3>
+    <div class="text-muted">
+      {{ student.first_name }} {{ student.last_name }} · {{ student.student_id }}
+      {% if enrollment %}· {{ enrollment.class_group }}{% endif %}
+    </div>
+    <div class="text-muted small">Range: {{ start_date }} → {{ end_date }}</div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'reports:home' %}">Change</a>
+    <a class="btn btn-primary"
+       href="{% url 'reports:pdf' student.id %}?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}">
+      Download PDF
+    </a>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-12 col-lg-4">
+    <div class="card">
+      <div class="card-body">
+        <div class="text-muted">Attendance</div>
+        <div class="fs-5 fw-bold">{{ attendance.total }} records</div>
+        <div class="mt-2 d-flex flex-wrap gap-2">
+          <span class="badge text-bg-success">present {{ attendance.present }}</span>
+          <span class="badge text-bg-warning">late {{ attendance.late }}</span>
+          <span class="badge text-bg-danger">absent {{ attendance.absent }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-4">
+    <div class="card">
+      <div class="card-body">
+        <div class="text-muted">Fees</div>
+        <div class="fs-5 fw-bold">Balance {{ fees.balance }}</div>
+        <div class="text-muted small mt-2">
+          Invoiced {{ fees.total_invoiced }} · Paid {{ fees.total_paid }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-4">
+    <div class="card">
+      <div class="card-body">
+        <div class="text-muted">Grades</div>
+        <div class="fs-5 fw-bold">{{ grades|length }} items</div>
+        <div class="text-muted small mt-2">Most recent assessments in range.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="card">
+      <div class="card-body p-0">
+        <div class="p-3 border-bottom">
+          <h5 class="mb-0">Recent Attendance</h5>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Date</th><th>Status</th><th>Class</th></tr></thead>
+            <tbody>
+              {% for r in attendance.qs %}
+                <tr>
+                  <td class="text-muted">{{ r.date }}</td>
+                  <td>
+                    {% if r.status == "present" %}<span class="badge text-bg-success">present</span>
+                    {% elif r.status == "late" %}<span class="badge text-bg-warning">late</span>
+                    {% else %}<span class="badge text-bg-danger">absent</span>{% endif %}
+                  </td>
+                  <td>{{ r.class_group }}</td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="3" class="text-muted p-3">No attendance records in range.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-6">
+    <div class="card">
+      <div class="card-body p-0">
+        <div class="p-3 border-bottom">
+          <h5 class="mb-0">Recent Grades</h5>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Date</th><th>Subject</th><th>Assessment</th><th>Score</th></tr></thead>
+            <tbody>
+              {% for g in grades %}
+                <tr>
+                  <td class="text-muted">{{ g.assessment.date }}</td>
+                  <td>{{ g.assessment.subject }}</td>
+                  <td class="fw-semibold">{{ g.assessment.title }}</td>
+                  <td>{{ g.score }}</td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="4" class="text-muted p-3">No grades in range.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mt-1">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body p-0">
+        <div class="p-3 border-bottom">
+          <h5 class="mb-0">Fees (Recent Invoices)</h5>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Invoice</th><th>Issue</th><th>Due</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              {% for inv in fees.invoices %}
+                <tr>
+                  <td class="fw-semibold">#{{ inv.id }}</td>
+                  <td class="text-muted">{{ inv.issue_date }}</td>
+                  <td>{{ inv.due_date }}</td>
+                  <td>{{ inv.total_amount }}</td>
+                  <td>
+                    {% if inv.status == "paid" %}
+                      <span class="badge text-bg-success">paid</span>
+                    {% elif inv.status == "pending_verification" %}
+                      <span class="badge text-bg-warning">pending</span>
+                    {% else %}
+                      <span class="badge text-bg-secondary">{{ inv.status }}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="5" class="text-muted p-3">No invoices found.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

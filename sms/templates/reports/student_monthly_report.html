@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Student Monthly Report</h2>
+{% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
+<p>Use: <code>/reports/student-monthly/?student_id=...&month=YYYY-MM</code></p>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}People · SMS{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-12 col-lg-7">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="mb-1">People</h3>
+        <p class="text-muted mb-3">Search students quickly or open a student record.</p>
+
+        <form method="get" action="{% url 'people:student_directory' %}" class="row g-2">
+          <div class="col-12 col-md-9">
+            <input class="form-control" name="q" placeholder="Search by ID, name, or grade…">
+          </div>
+          <div class="col-12 col-md-3">
+            <button class="btn btn-primary w-100" type="submit">Search</button>
+          </div>
+        </form>
+
+        <hr>
+        <a class="btn btn-outline-primary" href="{% url 'people:student_directory' %}">Open full directory</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-5">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="mb-2">Tips</h5>
+        <ul class="text-muted mb-0">
+          <li>Keep student IDs consistent across admissions.</li>
+          <li>Link parents via Student → parent_users for access control.</li>
+          <li>Use directory search during onboarding.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

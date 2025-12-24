@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Dashboard ({{ role }})</h2>
+
+  {% if role == "principal" or role == "admin" %}
+    <p>Students: {{ students_count }}</p>
+    <p>Teachers: {{ teachers_count }}</p>
+    <p>Unpaid/Partial/Pending invoices: {{ unpaid_invoices }}</p>
+    <p>Total threads: {{ threads_count }}</p>
+
+    <h3>Recent Notifications</h3>
+    <ul>
+      {% for n in notifications %}
+        <li>{{ n.created_at }} - {{ n.channel }} to {{ n.to }} ({{ n.status }})</li>
+      {% empty %}
+        <li>No notifications yet.</li>
+      {% endfor %}
+    </ul>
+
+    <p>
+      Report example:
+      <code>/reports/student-monthly/?student_id=S001&month=2025-01</code>
+    </p>
+  {% endif %}
+
+  {% if role == "teacher" %}
+    <p>Your threads: {{ my_threads }}</p>
+    <p>Your sent messages: {{ my_sent_messages }}</p>
+    <p><a href="{% url 'comms:start_thread' %}">Start a parent thread</a></p>
+    <p><a href="{% url 'academics:teacher_assessments' %}">My assessments</a></p>
+    <p><a href="{% url 'academics:take_attendance_pick' %}">Take attendance</a></p>
+  {% endif %}
+
+  {% if role == "parent" %}
+    <h3>Linked students</h3>
+    <ul>
+      {% for s in linked_students %}
+        <li>{{ s }}</li>
+      {% empty %}
+        <li>No linked students yet.</li>
+      {% endfor %}
+    </ul>
+    <p>Your invoices: {{ my_invoices }}</p>
+    <p>Your threads: {{ my_threads }}</p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load dict_extras %}
+{% block title %}Enter Grades · SMS{% endblock %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+    <h3 class="mb-1">Enter Grades</h3>
+    <div class="text-muted">
+      {{ assessment.class_group }} · {{ assessment.subject }} · {{ assessment.title }} (Max {{ assessment.max_score }})
+    </div>
+  </div>
+  <a class="btn btn-outline-secondary" href="{% url 'academics:teacher_assessments' %}">Back</a>
+</div>
+
+<form method="post">
+  {% csrf_token %}
+  <div class="card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr><th>Student</th><th style="width:160px;">Score</th><th>Comment</th></tr>
+          </thead>
+          <tbody>
+            {% for e in enrollments %}
+              {% with g=existing|get_item:e.student.id %}
+              <tr>
+                <td class="fw-semibold">
+                  {{ e.student.last_name }}, {{ e.student.first_name }}
+                  <div class="text-muted small">{{ e.student.student_id }}</div>
+                </td>
+                <td>
+                  <input class="form-control" name="score_{{ e.student.id }}" value="{% if g %}{{ g.score }}{% endif %}">
+                </td>
+                <td>
+                  <input class="form-control" name="comment_{{ e.student.id }}" value="{% if g %}{{ g.comment }}{% endif %}">
+                </td>
+              </tr>
+              {% endwith %}
+            {% empty %}
+              <tr><td colspan="3" class="text-muted p-3">No enrolled students.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card-footer d-flex justify-content-between">
+      <div class="text-muted small">Leave score blank to skip a student.</div>
+      <button class="btn btn-primary" type="submit">Save grades</button>
+    </div>
+  </div>
+</form>
+{% endblock %}

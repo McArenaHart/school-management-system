@@ -1,0 +1,104 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}SMS{% endblock %}</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="{% static 'assets/vendor/css/bootstrap.min.css' %}" rel="stylesheet"/>
+
+    <style>
+      body { background: #f7f8fb; }
+      .card { border: 0; box-shadow: 0 6px 18px rgba(24, 39, 75, 0.06); }
+      .badge-soft { background: rgba(13,110,253,.12); color: #0d6efd; }
+      .nav-pill-active { background: rgba(13,110,253,.12) !important; border-radius: 999px; }
+      .nav-link { border-radius: 999px; }
+    </style>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="{% url 'accounts:dashboard' %}">
+          SMS <span class="badge badge-soft ms-2">BusyBee MVP</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navMain">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link {% if request.resolver_match and request.resolver_match.view_name == 'accounts:dashboard' %}nav-pill-active{% endif %}"
+                href="{% url 'accounts:dashboard' %}">
+                Dashboard
+              </a>
+            </li>
+
+            {% if request.user.is_authenticated %}
+
+              {# Parent #}
+              {% if request.user.is_parent %}
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match and request.resolver_match.app_name == 'academics' and request.resolver_match.url_name == 'parent_student_hub' %}nav-pill-active{% endif %}" href="{% url 'academics:parent_student_hub' %}">Student Hub</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match and request.resolver_match.app_name == 'finance' %}nav-pill-active{% endif %}" href="{% url 'finance:my_fees' %}">Fees</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match and request.resolver_match.app_name == 'comms' %}nav-pill-active{% endif %}" href="{% url 'comms:inbox' %}">Comms</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match and request.resolver_match.app_name == 'reports' and request.resolver_match.url_name != 'dashboard' %}nav-pill-active{% endif %}" href="{% url 'reports:home' %}">Reports</a></li>
+              {% endif %}
+
+              {# Teacher #}
+              {% if request.user.is_teacher %}
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match and request.resolver_match.app_name == 'academics' and request.resolver_match.url_name == 'teacher_home' %}nav-pill-active{% endif %}" href="{% url 'academics:teacher_home' %}">Teaching</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match and request.resolver_match.app_name == 'academics' and request.resolver_match.url_name in 'take_attendance_pick take_attendance_mark' %}nav-pill-active{% endif %}" href="{% url 'academics:take_attendance_pick' %}">Attendance</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match and request.resolver_match.app_name == 'academics' and request.resolver_match.url_name in 'teacher_assessments create_assessment enter_grades' %}nav-pill-active{% endif %}" href="{% url 'academics:teacher_assessments' %}">Assessments</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match and request.resolver_match.app_name == 'comms' %}nav-pill-active{% endif %}" href="{% url 'comms:inbox' %}">Comms</a></li>
+              {% endif %}
+
+              {# Admin / Principal (now includes superuser/staff) #}
+              {% if request.user.is_superuser or request.user.is_staff or request.user.is_principal or request.user.is_school_admin %}
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match and request.resolver_match.app_name == 'reports' and request.resolver_match.url_name == 'dashboard' %}nav-pill-active{% endif %}" href="{% url 'reports:dashboard' %}">Analytics</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match and request.resolver_match.app_name == 'registrar' %}nav-pill-active{% endif %}" href="{% url 'registrar:admissions_list' %}">Admissions</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match and request.resolver_match.app_name == 'people' %}nav-pill-active{% endif %}" href="{% url 'people:my_students' %}">People</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match and request.resolver_match.app_name == 'finance' and request.resolver_match.url_name == 'verification_queue' %}nav-pill-active{% endif %}" href="{% url 'finance:verification_queue' %}">Verify POP</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match and request.resolver_match.app_name == 'reports' and request.resolver_match.url_name != 'dashboard' %}nav-pill-active{% endif %}" href="{% url 'reports:home' %}">Reports</a></li>
+              {% endif %}
+
+              {# IT Admin / System (also allow superuser) #}
+              {% if request.user.is_superuser or request.user.is_it_admin %}
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match and request.resolver_match.app_name == 'rbac' %}nav-pill-active{% endif %}" href="{% url 'rbac:home' %}">System</a></li>
+              {% endif %}
+
+            {% endif %}
+          </ul>
+
+
+          <div class="d-flex align-items-center gap-2">
+            {% if request.user.is_authenticated %}
+              <span class="text-muted small">{{ request.user.username }}</span>
+              <a class="btn btn-outline-secondary btn-sm" href="{% url 'accounts:logout' %}">Logout</a>
+            {% else %}
+              <a class="btn btn-primary btn-sm" href="{% url 'accounts:login' %}">Login</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container my-4">
+      {% if messages %}
+        {% for m in messages %}
+          <div class="alert alert-{{ m.tags|default:'info' }} alert-dismissible fade show" role="alert">
+            {{ m }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    <script src="{% static 'assets/vendor/js/bootstrap.bundle.min.js' %}"></script>
+  </body>
+</html>

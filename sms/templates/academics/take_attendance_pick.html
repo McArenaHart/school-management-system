@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Attendance · SMS{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-9 col-lg-6">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="mb-1">Take Attendance</h3>
+        <p class="text-muted mb-4">Select a class and a date (defaults to today).</p>
+
+        <form method="post" class="vstack gap-3">
+          {% csrf_token %}
+          <div>
+            <label class="form-label">Class group</label>
+            {{ form.class_group }}
+          </div>
+          <div>
+            <label class="form-label">Date</label>
+            {{ form.date }}
+          </div>
+
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary" type="submit">Load roster</button>
+            <a class="btn btn-outline-secondary" href="{% url 'accounts:dashboard' %}">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

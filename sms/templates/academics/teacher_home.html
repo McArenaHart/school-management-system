@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Teacher · SMS{% endblock %}
+{% block content %}
+<div class="d-flex align-items-start justify-content-between mb-3">
+  <div>
+    <h3 class="mb-1">Teacher Home</h3>
+    <div class="text-muted">Today: {{ today }}</div>
+  </div>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-primary" href="{% url 'academics:teacher_classes' %}">My classes</a>
+    <a class="btn btn-primary" href="{% url 'academics:take_attendance_pick' %}">Take attendance</a>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-7">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="mb-3">My lessons today</h5>
+        <div class="list-group">
+          {% for e in entries %}
+            <div class="list-group-item">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <div class="fw-semibold">{{ e.class_group }} · {{ e.subject }}</div>
+                  <div class="text-muted small">{{ e.start_time }} — {{ e.end_time }} {% if e.room %}· Room {{ e.room }}{% endif %}</div>
+                </div>
+                <div class="d-flex gap-2">
+                  <a class="btn btn-sm btn-outline-primary" href="{% url 'academics:class_detail' e.class_group.id %}">Roster</a>
+                  <a class="btn btn-sm btn-primary" href="/academics/attendance/take/mark/?class_group_id={{ e.class_group.id }}&date={{ today|date:'Y-m-d' }}">Attendance</a>
+                </div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="text-muted">No lessons scheduled for today.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-5">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="mb-3">Quick actions</h5>
+        <div class="d-grid gap-2">
+          <a class="btn btn-outline-primary" href="{% url 'academics:teacher_assessments' %}">Assessments</a>
+          <a class="btn btn-outline-primary" href="{% url 'academics:create_assessment' %}">Create assessment</a>
+          <a class="btn btn-outline-primary" href="{% url 'comms:inbox' %}">Messages</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

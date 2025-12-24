@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load dict_extras %}
+{% block title %}Inbox · SMS{% endblock %}
+{% block content %}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+    <h3 class="mb-1">Inbox</h3>
+    <div class="text-muted">Teacher ↔ Parent messaging per student.</div>
+  </div>
+  <div class="d-flex gap-2">
+    {% if request.user.is_teacher or request.user.is_school_admin or request.user.is_principal %}
+      <a class="btn btn-primary" href="{% url 'comms:start_thread' %}">Start thread</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <form class="row g-2" method="get">
+      <div class="col-12 col-md-9">
+        <input class="form-control" name="q" value="{{ q }}" placeholder="Search by student ID, name, parent, teacher…">
+      </div>
+      <div class="col-12 col-md-3">
+        <button class="btn btn-outline-primary w-100" type="submit">Search</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <div class="list-group list-group-flush">
+      {% for t in threads %}
+        {% with lm=last_msg_map|get_item:t.id %}
+        <a class="list-group-item list-group-item-action py-3" href="{% url 'comms:thread_detail' t.id %}">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="me-3">
+              <div class="fw-semibold">
+                {{ t.student.first_name }} {{ t.student.last_name }}
+                <span class="text-muted fw-normal">· {{ t.student.student_id }}</span>
+              </div>
+              <div class="text-muted small">
+                Teacher: {{ t.teacher_user.username }} · Parent: {{ t.parent_user.username }}
+              </div>
+
+              {% if lm %}
+                <div class="mt-2 text-muted small">
+                  <span class="fw-semibold">{{ lm.sender.username }}:</span>
+                  {{ lm.body|truncatechars:90 }}
+                </div>
+              {% else %}
+                <div class="mt-2 text-muted small">No messages yet.</div>
+              {% endif %}
+            </div>
+
+            <div class="text-end">
+              {% if unread.t.id %}
+                <span class="badge rounded-pill text-bg-primary">{{ unread.t.id }} new</span>
+              {% endif %}
+              <div class="text-muted small mt-2">
+                {% if t.last_msg_at %}{{ t.last_msg_at }}{% else %}{{ t.created_at }}{% endif %}
+              </div>
+            </div>
+          </div>
+        </a>
+        {% endwith %}
+      {% empty %}
+        <div class="p-3 text-muted">No threads found.</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

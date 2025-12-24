@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Link Student · SMS{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8 col-lg-6">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="mb-1">Link a Student</h3>
+        <p class="text-muted mb-4">Enter the details exactly as registered at the school.</p>
+
+        <form method="post" class="vstack gap-3">
+          {% csrf_token %}
+
+          <div>
+            <label class="form-label">Student ID</label>
+            {{ form.student_id }}
+          </div>
+
+          <div>
+            <label class="form-label">Surname (Last name)</label>
+            {{ form.last_name }}
+          </div>
+
+          <div>
+            <label class="form-label">Date of birth</label>
+            {{ form.date_of_birth }}
+            <div class="form-text">Format: YYYY-MM-DD</div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary" type="submit">Link student</button>
+            <a class="btn btn-outline-secondary" href="{% url 'people:my_students' %}">Back</a>
+          </div>
+        </form>
+
+        <hr>
+        <div class="text-muted small">
+          If the student can’t be found, contact the school office to confirm the registered details.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

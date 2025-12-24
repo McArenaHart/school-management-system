@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Reports · SMS{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-8">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="mb-1">Reports</h3>
+        <p class="text-muted mb-4">Generate a clean report covering attendance, grades, and fees.</p>
+
+        <form method="get" action="{% url 'reports:generate' %}" class="row g-3">
+          <div class="col-12 col-md-6">
+            <label class="form-label">Student</label>
+            {{ form.student }}
+            <div class="form-text">Parents auto-use their linked student.</div>
+          </div>
+          <div class="col-12 col-md-3">
+            <label class="form-label">Start date</label>
+            {{ form.start_date }}
+          </div>
+          <div class="col-12 col-md-3">
+            <label class="form-label">End date</label>
+            {{ form.end_date }}
+          </div>
+
+          <div class="col-12 d-flex gap-2">
+            <button class="btn btn-primary" type="submit">Generate</button>
+            <a class="btn btn-outline-secondary" href="{% url 'accounts:dashboard' %}">Back</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

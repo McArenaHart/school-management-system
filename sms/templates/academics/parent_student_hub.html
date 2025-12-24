@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Student Hub · SMS{% endblock %}
+{% block content %}
+
+{% if note %}
+  <div class="card"><div class="card-body">{{ note }}</div></div>
+{% else %}
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+      <h3 class="mb-1">{{ student.first_name }} {{ student.last_name }}</h3>
+      <div class="text-muted">{{ student.student_id }} {% if enrollment %}· {{ enrollment.class_group }}{% endif %}</div>
+    </div>
+    <a class="btn btn-outline-primary" href="{% url 'people:student_detail' student.pk %}">Profile</a>
+  </div>
+
+  <ul class="nav nav-pills mb-3" id="hubTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab_tt" type="button">Timetable</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab_att" type="button">Attendance</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab_gr" type="button">Grades</button>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane fade show active" id="tab_tt">
+      <div class="card">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light"><tr><th>Day</th><th>Start</th><th>End</th><th>Subject</th><th>Room</th></tr></thead>
+              <tbody>
+                {% for e in timetable %}
+                  <tr>
+                    <td class="text-muted">{{ e.get_day_of_week_display }}</td>
+                    <td>{{ e.start_time }}</td>
+                    <td>{{ e.end_time }}</td>
+                    <td class="fw-semibold">{{ e.subject }}</td>
+                    <td>{{ e.room|default:"—" }}</td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="5" class="text-muted p-3">No timetable entries yet.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="tab_att">
+      <div class="card">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light"><tr><th>Date</th><th>Status</th><th>Class</th></tr></thead>
+              <tbody>
+                {% for r in attendance %}
+                  <tr>
+                    <td class="text-muted">{{ r.date }}</td>
+                    <td>
+                      {% if r.status == "present" %}<span class="badge text-bg-success">present</span>
+                      {% elif r.status == "late" %}<span class="badge text-bg-warning">late</span>
+                      {% else %}<span class="badge text-bg-danger">absent</span>{% endif %}
+                    </td>
+                    <td>{{ r.class_group }}</td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="3" class="text-muted p-3">No attendance records yet.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="tab_gr">
+      <div class="card">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light"><tr><th>Date</th><th>Subject</th><th>Assessment</th><th>Score</th><th>Comment</th></tr></thead>
+              <tbody>
+                {% for g in grades %}
+                  <tr>
+                    <td class="text-muted">{{ g.assessment.date }}</td>
+                    <td>{{ g.assessment.subject }}</td>
+                    <td class="fw-semibold">{{ g.assessment.title }}</td>
+                    <td>{{ g.score }}</td>
+                    <td class="text-muted">{{ g.comment|default:"—" }}</td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="5" class="text-muted p-3">No grades yet.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+{% endif %}
+
+{% endblock %}

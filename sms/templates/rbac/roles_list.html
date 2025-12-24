@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Roles · SMS{% endblock %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+    <h3 class="mb-1">Roles</h3>
+    <div class="text-muted">Create roles and attach permissions.</div>
+  </div>
+  <a class="btn btn-primary" href="{% url 'rbac:role_create' %}">Create role</a>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light"><tr><th>Name</th><th>Description</th><th>Permissions</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+          {% for r in roles %}
+            <tr>
+              <td class="fw-semibold">{{ r.name }}</td>
+              <td class="text-muted">{{ r.description|default:"—" }}</td>
+              <td class="text-muted small">{{ r.permissions.count }}</td>
+              <td class="text-end">
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'rbac:role_edit' r.id %}">Edit</a>
+                <form class="d-inline" method="post" action="{% url 'rbac:role_delete' r.id %}">
+                  {% csrf_token %}
+                  <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4" class="text-muted p-3">No roles yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

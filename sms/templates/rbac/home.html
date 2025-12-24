@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}System & Roles · SMS{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-body">
+      <h3 class="mb-1">System & Roles</h3>
+      <p class="text-muted mb-3">Define roles, permissions, and assign them to users.</p>
+      <div class="d-flex gap-2">
+        <a class="btn btn-primary" href="{% url 'rbac:roles_list' %}">Roles</a>
+        <a class="btn btn-outline-primary" href="{% url 'rbac:perms_list' %}">Permissions</a>
+        <a class="btn btn-outline-secondary" href="{% url 'rbac:assignments' %}">Assignments</a>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-body">
+      <h5 class="mb-2">Recommended MVP permissions</h5>
+      <ul class="text-muted mb-0">
+        <li>finance.verify_pop</li>
+        <li>registrar.manage_admissions</li>
+        <li>library.manage_loans</li>
+        <li>academics.manage_assessments</li>
+        <li>comms.moderate</li>
+      </ul>
+    </div></div>
+  </div>
+</div>
+{% endblock %}
