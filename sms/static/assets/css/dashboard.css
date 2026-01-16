@@ -40,7 +40,7 @@ a {
 .sidebar {
   width: 280px;
   background: var(--sidebar-bg);
-  padding: 28px 22px;
+  padding: 24px 18px 26px 24px;
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -115,7 +115,7 @@ a {
   z-index: 10;
   background: var(--topbar-bg);
   border-bottom: 1px solid var(--border);
-  padding: 16px 32px;
+  padding: 12px 26px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -200,7 +200,7 @@ a {
 }
 
 .workspace-body {
-  padding: 32px;
+  padding: 20px 26px 38px;
   display: flex;
   flex-direction: column;
   gap: 24px;
