@@ -414,6 +414,23 @@ a {
   box-shadow: var(--shadow-soft);
 }
 
+.card {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 18px;
+  background: var(--surface);
+  margin-bottom: 1.25rem;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+}
+
+.card-body {
+  padding: 18px 22px;
+  background: transparent;
+}
+
+.card-body.p-0 {
+  padding: 0 !important;
+}
+
 .form-control,
 input,
 select,
