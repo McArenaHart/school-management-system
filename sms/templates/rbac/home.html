@@ -1,30 +1,104 @@
 {% extends "base.html" %}
 {% block title %}System & Roles · SMS{% endblock %}
+
+{% block hero %}
+  <section class="hero-panel hero-strip">
+    <article class="hero-card">
+      <div class="icon">👥</div>
+      <div class="label">Roles defined</div>
+      <div class="value">{{ roles_count|default:"0" }}</div>
+      <div class="text-muted small mt-1">Round robin admin teams</div>
+    </article>
+    <article class="hero-card">
+      <div class="icon">🧾</div>
+      <div class="label">Permissions</div>
+      <div class="value">{{ permissions_count|default:"0" }}</div>
+      <div class="text-muted small mt-1">Action catalog</div>
+    </article>
+    <article class="hero-card">
+      <div class="icon">🔐</div>
+      <div class="label">Assignments</div>
+      <div class="value">{{ assignments_count|default:"0" }}</div>
+      <div class="text-muted small mt-1">Role links</div>
+    </article>
+    <article class="hero-card">
+      <div class="icon">⭐</div>
+      <div class="label">Users covered</div>
+      <div class="value">{{ users_with_roles|default:"0" }}</div>
+      <div class="text-muted small mt-1">Profiles under control</div>
+    </article>
+  </section>
+{% endblock %}
+
 {% block content %}
-<div class="row g-3">
-  <div class="col-12 col-lg-6">
-    <div class="card"><div class="card-body">
-      <h3 class="mb-1">System & Roles</h3>
-      <p class="text-muted mb-3">Define roles, permissions, and assign them to users.</p>
-      <div class="d-flex gap-2">
-        <a class="btn btn-primary" href="{% url 'rbac:roles_list' %}">Roles</a>
-        <a class="btn btn-outline-primary" href="{% url 'rbac:perms_list' %}">Permissions</a>
-        <a class="btn btn-outline-secondary" href="{% url 'rbac:assignments' %}">Assignments</a>
+
+  <div class="dashboard-grid">
+    <div class="dashboard-panel">
+      <div class="panel-header">
+        <span>Core operations</span>
+        <span class="pill">Quick start</span>
       </div>
-    </div></div>
+      <p class="text-muted mb-3">
+        Create roles, tailor permissions, and onboard users with confidence. Each card below jumps straight to the flow you need.
+      </p>
+      <div class="dashboard-actions">
+        <a class="quick-action-card" href="{% url 'rbac:roles_list' %}">
+          <span>🧑‍💼</span>
+          <span>Roles</span>
+          <small class="text-muted">Review & edit role permissions</small>
+        </a>
+        <a class="quick-action-card" href="{% url 'rbac:perms_list' %}">
+          <span>🧾</span>
+          <span>Permissions</span>
+          <small class="text-muted">Create permission codes</small>
+        </a>
+        <a class="quick-action-card" href="{% url 'rbac:user_create' %}">
+          <span>➕</span>
+          <span>Add user</span>
+          <small class="text-muted">Create staff/parent accounts</small>
+        </a>
+        <a class="quick-action-card" href="{% url 'rbac:bulk_user_upload' %}">
+          <span>📥</span>
+          <span>Bulk upload</span>
+          <small class="text-muted">Seed users via CSV</small>
+        </a>
+        <a class="quick-action-card" href="{% url 'rbac:perm_assignments' %}">
+          <span>🔗</span>
+          <span>Assignments</span>
+          <small class="text-muted">Tie roles to permissions</small>
+        </a>
+        <a class="quick-action-card" href="{% url 'rbac:assignments' %}">
+          <span>🗂️</span>
+          <span>User link</span>
+          <small class="text-muted">Grant roles on users</small>
+        </a>
+      </div>
+    </div>
+
+    <div class="dashboard-panel">
+      <div class="panel-header">
+        <span>Recommended permissions</span>
+        <span class="pill">MVP kit</span>
+      </div>
+      <div class="text-muted small mb-3">Start with these cross-module actions, then grow as you learn patterns.</div>
+      <div class="row g-3">
+        {% for section in [
+          ("Finance", "finance.verify_pop", "Clear payment proofs"),
+          ("Registrar", "registrar.manage_admissions", "Move applicants forward"),
+          ("Academics", "academics.manage_assessments", "Create & score assessments"),
+          ("Communications", "comms.moderate", "Moderate inbox and threads"),
+          ("Reports", "reports.view_reports", "Open analytics & PDFs"),
+        ] %}
+          <div class="col-12 col-sm-6">
+            <div class="stat-tile">
+              <div class="text-muted small">{{ section.0 }}</div>
+              <div class="fw-semibold">{{ section.1 }}</div>
+              <div class="text-muted small">{{ section.2 }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
   </div>
 
-  <div class="col-12 col-lg-6">
-    <div class="card"><div class="card-body">
-      <h5 class="mb-2">Recommended MVP permissions</h5>
-      <ul class="text-muted mb-0">
-        <li>finance.verify_pop</li>
-        <li>registrar.manage_admissions</li>
-        <li>library.manage_loans</li>
-        <li>academics.manage_assessments</li>
-        <li>comms.moderate</li>
-      </ul>
-    </div></div>
-  </div>
-</div>
 {% endblock %}
