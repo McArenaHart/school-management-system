@@ -1,77 +1,131 @@
 {% extends "base.html" %}
 {% block title %}Application · SMS{% endblock %}
+
 {% block content %}
 
-<div class="d-flex align-items-start justify-content-between mb-3">
-  <div>
-    <h3 class="mb-1">{{ app.first_name }} {{ app.last_name }}</h3>
-    <div class="text-muted">DOB {{ app.date_of_birth }} · Requested grade: {{ app.requested_grade|default:"—" }}</div>
-    <div class="text-muted small">Created {{ app.created_at }}</div>
+  <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+      <h3 class="mb-1">{{ app.first_name }} {{ app.last_name }}</h3>
+      <p class="text-muted mb-0">
+        DOB {{ app.date_of_birth }} · Requested grade: {{ app.requested_grade|default:"N/A" }}
+      </p>
+      <p class="text-muted small mb-0">Created {{ app.created_at }}</p>
+    </div>
+    <a class="btn btn-outline-secondary" href="{% url 'registrar:admissions_list' %}">Back</a>
   </div>
-  <a class="btn btn-outline-secondary" href="{% url 'registrar:admissions_list' %}">Back</a>
-</div>
 
-<div class="row g-3">
-  <div class="col-12 col-lg-6">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="mb-3">Guardian</h5>
-        <div class="d-flex justify-content-between"><div class="text-muted">Name</div><div class="fw-semibold">{{ app.guardian_name }}</div></div>
-        <div class="d-flex justify-content-between"><div class="text-muted">Phone</div><div class="fw-semibold">{{ app.guardian_phone|default:"—" }}</div></div>
-        <div class="d-flex justify-content-between"><div class="text-muted">Email</div><div class="fw-semibold">{{ app.guardian_email|default:"—" }}</div></div>
-        <div class="d-flex justify-content-between"><div class="text-muted">Relationship</div><div class="fw-semibold">{{ app.guardian_relationship|default:"—" }}</div></div>
-        {% if app.notes %}
-          <hr><div class="text-muted small">Notes</div><div>{{ app.notes }}</div>
+  <div class="dashboard-grid mb-4">
+    <div class="dashboard-panel">
+      <div class="panel-header">
+        <span>Guardian</span>
+        <span class="pill">Contact</span>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <div class="fw-semibold">{{ app.guardian_name|default:"n/a" }}</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <div class="fw-semibold">{{ app.guardian_phone|default:"n/a" }}</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <div class="fw-semibold">{{ app.guardian_email|default:"n/a" }}</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Relationship</label>
+          <div class="fw-semibold">{{ app.guardian_relationship|default:"n/a" }}</div>
+        </div>
+      </div>
+      {% if app.notes %}
+        <hr>
+        <div class="text-muted small">Notes</div>
+        <div>{{ app.notes }}</div>
+      {% endif %}
+    </div>
+    <div class="dashboard-panel">
+      <div class="panel-header">
+        <span>Status</span>
+        <span class="pill">Progress</span>
+      </div>
+      <div class="d-flex flex-wrap gap-2 mb-3">
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'registrar:mark_status' app.id 'reviewed' %}">Mark reviewed</a>
+        <a class="btn btn-sm btn-outline-danger" href="{% url 'registrar:mark_status' app.id 'rejected' %}">Reject</a>
+      </div>
+      <div class="mb-3">
+        <span class="badge text-bg-light">Current: {{ app.status }}</span>
+        {% if app.admitted_student_id %}
+          <span class="badge text-bg-success ms-2">Admitted: {{ app.admitted_student_id }}</span>
         {% endif %}
       </div>
-    </div>
-  </div>
-
-  <div class="col-12 col-lg-6">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="mb-3">Status</h5>
-
-        <div class="d-flex flex-wrap gap-2 mb-3">
-          <a class="btn btn-sm btn-outline-primary" href="{% url 'registrar:mark_status' app.id 'reviewed' %}">Mark reviewed</a>
-          <a class="btn btn-sm btn-outline-danger" href="{% url 'registrar:mark_status' app.id 'rejected' %}">Reject</a>
-        </div>
-
-        <div class="mb-3">
-          <span class="badge text-bg-light">Current: {{ app.status }}</span>
+      {% if can_manage %}
+        {% if admitted_student %}
+          <div class="alert alert-success mt-3">
+            <strong>{{ admitted_student.first_name }} {{ admitted_student.last_name }}</strong> is already admitted
+            <span class="text-muted small d-block">Student ID: {{ admitted_student.student_id|default:admitted_student.student_number|default:"-" }}</span>
+            <a class="link-cozy mt-2 d-inline-flex align-items-center gap-2" href="{% url 'people:student_detail' admitted_student.id %}">
+              View student profile →
+            </a>
+          </div>
+        {% else %}
           {% if app.admitted_student_id %}
-            <span class="badge text-bg-success ms-2">Admitted: {{ app.admitted_student_id }}</span>
+            <div class="alert alert-warning mt-3">
+              Admitted student <strong>{{ app.admitted_student_id }}</strong> could not be loaded. Contact IT before re-running the admit action.
+            </div>
           {% endif %}
-        </div>
+        {% endif %}
 
-        {% if can_manage %}
-          <hr>
-          <h5 class="mb-3">Admit & Enroll</h5>
-          <form method="post" action="{% url 'registrar:admit_application' app.id %}" class="vstack gap-2">
+        {% if not admitted_student %}
+          <div class="form-panel mt-3">
+            <h5 class="mb-3">Admit & enroll</h5>
+            <form method="post" action="{% url 'registrar:admit_application' app.id %}" class="form-grid">
+              {% csrf_token %}
+              <div class="form-group">
+                <label class="form-label">Student ID (new or existing)</label>
+                <input class="form-control" name="student_id" placeholder="Leave blank to auto-generate (e.g. A0012025)">
+              </div>
+              <div class="form-group">
+                {% if class_group_notice %}
+                  <div class="alert alert-warning small py-2 mb-2">{{ class_group_notice }}</div>
+                {% endif %}
+                <label class="form-label">Class group</label>
+                <select class="form-select" name="class_group">
+                  {% for cg in admit_form.fields.class_group.queryset %}
+                    <option value="{{ cg.id }}">{{ cg.name }} · {{ cg.grade_level }} · {{ cg.academic_year }} · cap {{ cg.capacity|default:"n/a" }}</option>
+                  {% endfor %}
+                </select>
+                <div class="text-muted small mt-1">Capacity shown; warning if over capacity.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Parent username (optional)</label>
+                <input class="form-control" name="parent_username" placeholder="Parent account username">
+              </div>
+              <div class="form-check form-group">
+                <input class="form-check-input" type="checkbox" value="true" id="createParent" name="create_parent_user">
+                <label class="form-check-label" for="createParent">Auto-create parent user if not linked</label>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Parent email (optional)</label>
+                <input class="form-control" name="parent_email" placeholder="guardian@example.com" value="{{ app.guardian_email }}">
+                <div class="text-muted small">Used if creating a parent account.</div>
+              </div>
+              <div class="form-actions">
+                <button class="btn-cozy" type="submit">Admit student</button>
+              </div>
+              <p class="text-muted small mt-2">This creates/links a Student record, enrolls in class, and optionally links a parent user.</p>
+            </form>
+          </div>
+        {% endif %}
+
+        {% if admitted_student and request.user.is_principal %}
+          <form method="post" action="{% url 'registrar:remove_admitted_student' app.id %}" class="form-actions mt-3">
             {% csrf_token %}
-            <div>
-              <label class="form-label">Student ID (new or existing)</label>
-              <input class="form-control" name="student_id" placeholder="e.g. 2025-0012">
-            </div>
-            <div>
-              <label class="form-label">Class group</label>
-              <select class="form-select" name="class_group">
-                {% for cg in admit_form.fields.class_group.queryset %}
-                  <option value="{{ cg.id }}">{{ cg }}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <div>
-              <label class="form-label">Parent username (optional)</label>
-              <input class="form-control" name="parent_username" placeholder="parent account username">
-            </div>
-            <button class="btn btn-success" type="submit">Admit student</button>
-            <div class="text-muted small">This creates/links a Student record, enrolls in class, and optionally links a parent user.</div>
+            <button class="btn btn-outline-secondary" type="submit">Remove admitted student</button>
           </form>
         {% endif %}
-      </div>
+      {% endif %}
     </div>
   </div>
-</div>
 
 {% endblock %}

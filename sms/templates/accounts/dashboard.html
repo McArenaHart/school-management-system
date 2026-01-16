@@ -1,46 +1,260 @@
 {% extends "base.html" %}
+
+{% block hero %}
+  <section class="hero-panel hero-strip">
+    {% if role == "principal" or role == "admin" %}
+      <a href="{% url 'people:students_list' %}" class="hero-card hero-card-link">
+        <div class="icon">🎓</div>
+        <div class="label">Total students</div>
+        <div class="value">{{ students_count|default:"0" }}</div>
+        <div class="text-muted small mt-1">Roster</div>
+      </a>
+      <a href="{% url 'rbac:home' %}" class="hero-card hero-card-link">
+        <div class="icon">👩‍💼</div>
+        <div class="label">Total employees</div>
+        <div class="value">{{ employees_count|default:"0" }}</div>
+        <div class="text-muted small mt-1">Accounts & staff</div>
+      </a>
+      <a href="{% url 'academics:subjects_manage' %}" class="hero-card hero-card-link">
+        <div class="icon">📚</div>
+        <div class="label">Total subjects</div>
+        <div class="value">{{ subjects_count|default:"0" }}</div>
+        <div class="text-muted small mt-1">Course list</div>
+      </a>
+      <a href="{% url 'registrar:admissions_list' %}" class="hero-card hero-card-link">
+        <div class="icon">📅</div>
+        <div class="label">Applications</div>
+        <div class="value">{{ admissions_total|default:"0" }}</div>
+        <div class="text-muted small mt-1">New {{ admissions_new|default:"0" }}</div>
+      </a>
+    {% elif role == "teacher" %}
+      <a href="{% url 'academics:teacher_classes' %}" class="hero-card hero-card-link">
+        <div class="icon">📚</div>
+        <div class="label">Classes</div>
+        <div class="value">{{ class_groups_count|default:"0" }}</div>
+        <div class="text-muted small mt-1">My roster</div>
+      </a>
+      <a href="{% url 'comms:start_thread' %}" class="hero-card hero-card-link">
+        <div class="icon">✉️</div>
+        <div class="label">Messages sent</div>
+        <div class="value">{{ my_sent_messages|default:"0" }}</div>
+        <div class="text-muted small mt-1">Follow up</div>
+      </a>
+      <a href="{% url 'comms:inbox' %}" class="hero-card hero-card-link">
+        <div class="icon">💬</div>
+        <div class="label">Threads</div>
+        <div class="value">{{ my_threads|default:"0" }}</div>
+        <div class="text-muted small mt-1">Unread conversations</div>
+      </a>
+    {% elif role == "parent" %}
+      <a href="{% url 'people:my_children' %}" class="hero-card hero-card-link">
+        <div class="icon">👪</div>
+        <div class="label">Linked children</div>
+        <div class="value">{{ linked_students|length|default:"0" }}</div>
+        <div class="text-muted small mt-1">Family profiles</div>
+      </a>
+      <a href="{% url 'finance:my_fees' %}" class="hero-card hero-card-link">
+        <div class="icon">🧾</div>
+        <div class="label">Invoices</div>
+        <div class="value">{{ my_invoices|default:"0" }}</div>
+        <div class="text-muted small mt-1">Outstanding</div>
+      </a>
+      <a href="{% url 'comms:inbox' %}" class="hero-card hero-card-link">
+        <div class="icon">📨</div>
+        <div class="label">Messages</div>
+        <div class="value">{{ my_threads|default:"0" }}</div>
+        <div class="text-muted small mt-1">Talk to teachers</div>
+      </a>
+    {% endif %}
+  </section>
+
+{% endblock %}
+
 {% block content %}
-  <h2>Dashboard ({{ role }})</h2>
+
+  <div class="dashboard-intro mb-3">
+    <div>
+      <h4 class="mb-1">Dashboard</h4>
+      <p class="text-muted mb-0">Quick overview of what’s happening today across students, finance, and communication.</p>
+    </div>
+  </div>
 
   {% if role == "principal" or role == "admin" %}
-    <p>Students: {{ students_count }}</p>
-    <p>Teachers: {{ teachers_count }}</p>
-    <p>Unpaid/Partial/Pending invoices: {{ unpaid_invoices }}</p>
-    <p>Total threads: {{ threads_count }}</p>
+    <div class="dashboard-grid mb-4">
+      <div class="dashboard-panel">
+        <div class="panel-header">
+          <span>Absentees (current month)</span>
+          <span class="pill">Last 30 days</span>
+        </div>
+        <div class="d-flex flex-wrap gap-3 align-items-center">
+          <div class="stat-chip">
+            <div class="stat-chip-value">{{ attendance_summary.absent|default:"0" }}</div>
+            <small class="text-muted d-block">Absences</small>
+          </div>
+          <div class="stat-chip">
+            <div class="stat-chip-value">{{ attendance_summary.present|default:"0" }}</div>
+            <small class="text-muted d-block">Presents</small>
+          </div>
+          <div class="stat-chip">
+            <div class="stat-chip-value">{{ attendance_summary.late|default:"0" }}</div>
+            <small class="text-muted d-block">Late</small>
+          </div>
+        </div>
+        <div class="mt-4">
+          <h6 class="mb-3">Recent absences</h6>
+          <div class="recent-absence-list">
+            {% for att in absent_recent %}
+              <div class="recent-absence-row">
+                <div>
+                  <strong>{{ att.student.first_name }} {{ att.student.last_name }}</strong>
+                  <div class="text-muted small">Class {{ att.class_group.name|default:"-" }}</div>
+                </div>
+                <div class="text-end">
+                  <div class="text-muted small">{{ att.date }}</div>
+                  <span class="badge badge-soft text-muted">{{ att.status|capfirst }}</span>
+                </div>
+              </div>
+            {% empty %}
+              <div class="text-muted small py-3">No absences logged in the last 30 days.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
 
-    <h3>Recent Notifications</h3>
-    <ul>
-      {% for n in notifications %}
-        <li>{{ n.created_at }} - {{ n.channel }} to {{ n.to }} ({{ n.status }})</li>
-      {% empty %}
-        <li>No notifications yet.</li>
-      {% endfor %}
-    </ul>
-
-    <p>
-      Report example:
-      <code>/reports/student-monthly/?student_id=S001&month=2025-01</code>
-    </p>
+      <div class="dashboard-panel">
+        <div class="panel-header">
+          <span>Quick actions</span>
+          <span class="pill">Fast track</span>
+        </div>
+        <div class="dashboard-actions">
+          <a href="{% url 'registrar:apply' %}" class="quick-action-card">
+            <span>➕</span>
+            <span>Add student</span>
+            <small class="text-muted">Start a new application</small>
+          </a>
+          <a href="{% url 'rbac:user_create' %}" class="quick-action-card">
+            <span>🧑‍💼</span>
+            <span>Add employee</span>
+            <small class="text-muted">Create teacher account</small>
+          </a>
+          <a href="{% url 'core:academic_years' %}" class="quick-action-card">
+            <span>📆</span>
+            <span>Plan academic calendar</span>
+            <small class="text-muted">Set terms & holidays</small>
+          </a>
+          <a href="{% url 'comms:start_thread' %}" class="quick-action-card">
+            <span>📣</span>
+            <span>Send announcement</span>
+            <small class="text-muted">Message families</small>
+          </a>
+          <a href="{% url 'registrar:bulk_applications_upload' %}" class="quick-action-card">
+            <span>📥</span>
+            <span>Import applications</span>
+            <small class="text-muted">Upload CSV</small>
+          </a>
+          <a href="{% url 'registrar:bulk_admit_upload' %}" class="quick-action-card">
+            <span>📤</span>
+            <span>Import admits</span>
+            <small class="text-muted">Bulk enroll students</small>
+          </a>
+          <a href="{% url 'finance:verification_queue' %}" class="quick-action-card">
+            <span>💳</span>
+            <span>Review POP</span>
+            <small class="text-muted">Verify uploads</small>
+          </a>
+        </div>
+      </div>
+    </div>
+  {% elif role == "teacher" %}
+    <div class="dashboard-grid mb-4">
+      <div class="dashboard-panel">
+        <div class="panel-header">
+          <span>Teacher toolbox</span>
+          <span class="pill">Actions</span>
+        </div>
+        <div class="dashboard-actions">
+          <a href="{% url 'academics:teacher_classes' %}" class="quick-action-card">
+            <span>👩‍🏫</span>
+            <span>My classes</span>
+            <small class="text-muted">View rosters</small>
+          </a>
+          <a href="{% url 'academics:take_attendance_pick' %}" class="quick-action-card">
+            <span>📝</span>
+            <span>Take attendance</span>
+            <small class="text-muted">Mark today</small>
+          </a>
+          <a href="{% url 'academics:teacher_assessments' %}" class="quick-action-card">
+            <span>📊</span>
+            <span>Assessments</span>
+            <small class="text-muted">Review & score</small>
+          </a>
+          <a href="{% url 'comms:inbox' %}" class="quick-action-card">
+            <span>💬</span>
+            <span>Inbox</span>
+            <small class="text-muted">Talk to parents</small>
+          </a>
+        </div>
+      </div>
+    </div>
+  {% elif role == "parent" %}
+    <div class="dashboard-grid mb-4">
+      <div class="dashboard-panel">
+        <div class="panel-header">
+          <span>Parent quick links</span>
+          <span class="pill">Family</span>
+        </div>
+        <div class="dashboard-actions">
+          <a href="{% url 'people:my_children' %}" class="quick-action-card">
+            <span>👨‍👩‍👧</span>
+            <span>My children</span>
+            <small class="text-muted">View details</small>
+          </a>
+          <a href="{% url 'finance:my_fees' %}" class="quick-action-card">
+            <span>🧾</span>
+            <span>Invoices</span>
+            <small class="text-muted">Pay & track</small>
+          </a>
+          <a href="{% url 'comms:inbox' %}" class="quick-action-card">
+            <span>📨</span>
+            <span>Messages</span>
+            <small class="text-muted">Contact teachers</small>
+          </a>
+        </div>
+      </div>
+    </div>
   {% endif %}
 
-  {% if role == "teacher" %}
-    <p>Your threads: {{ my_threads }}</p>
-    <p>Your sent messages: {{ my_sent_messages }}</p>
-    <p><a href="{% url 'comms:start_thread' %}">Start a parent thread</a></p>
-    <p><a href="{% url 'academics:teacher_assessments' %}">My assessments</a></p>
-    <p><a href="{% url 'academics:take_attendance_pick' %}">Take attendance</a></p>
-  {% endif %}
+  <div class="dashboard-panel">
+    <div class="panel-header">
+      <span>Recent notifications</span>
+      <span class="text-muted small">Latest 10</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table-cozy align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Channel</th>
+            <th>Recipient</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for n in notifications %}
+            <tr>
+              <td>{{ n.created_at|date:"Y-m-d H:i" }}</td>
+              <td>{{ n.channel|title }}</td>
+              <td>{{ n.to }}</td>
+              <td>{{ n.status|capfirst }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="4" class="text-center text-muted">No notifications yet</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-  {% if role == "parent" %}
-    <h3>Linked students</h3>
-    <ul>
-      {% for s in linked_students %}
-        <li>{{ s }}</li>
-      {% empty %}
-        <li>No linked students yet.</li>
-      {% endfor %}
-    </ul>
-    <p>Your invoices: {{ my_invoices }}</p>
-    <p>Your threads: {{ my_threads }}</p>
-  {% endif %}
 {% endblock %}

@@ -1,55 +1,91 @@
 {% extends "base.html" %}
-{% block title %}Teacher · SMS{% endblock %}
-{% block content %}
-<div class="d-flex align-items-start justify-content-between mb-3">
-  <div>
-    <h3 class="mb-1">Teacher Home</h3>
-    <div class="text-muted">Today: {{ today }}</div>
-  </div>
-  <div class="d-flex gap-2">
-    <a class="btn btn-outline-primary" href="{% url 'academics:teacher_classes' %}">My classes</a>
-    <a class="btn btn-primary" href="{% url 'academics:take_attendance_pick' %}">Take attendance</a>
-  </div>
-</div>
+{% block title %}Teacher Home · SMS{% endblock %}
 
-<div class="row g-3">
-  <div class="col-12 col-lg-7">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="mb-3">My lessons today</h5>
-        <div class="list-group">
-          {% for e in entries %}
-            <div class="list-group-item">
-              <div class="d-flex justify-content-between">
-                <div>
-                  <div class="fw-semibold">{{ e.class_group }} · {{ e.subject }}</div>
-                  <div class="text-muted small">{{ e.start_time }} — {{ e.end_time }} {% if e.room %}· Room {{ e.room }}{% endif %}</div>
-                </div>
-                <div class="d-flex gap-2">
-                  <a class="btn btn-sm btn-outline-primary" href="{% url 'academics:class_detail' e.class_group.id %}">Roster</a>
-                  <a class="btn btn-sm btn-primary" href="/academics/attendance/take/mark/?class_group_id={{ e.class_group.id }}&date={{ today|date:'Y-m-d' }}">Attendance</a>
+{% block content %}
+
+  <section class="hero-panel hero-strip">
+    <article class="hero-card">
+      <div class="icon">📚</div>
+      <div class="label">Lessons today</div>
+      <div class="value">{{ entries|length }}</div>
+    </article>
+    <article class="hero-card">
+      <div class="icon">🏫</div>
+      <div class="label">Classes</div>
+      <div class="value">{{ classes|length }}</div>
+    </article>
+    <article class="hero-card">
+      <div class="icon">📝</div>
+      <div class="label">Assessments</div>
+      <div class="value">{{ assessments_count }}</div>
+      <div class="text-muted small mt-1">Attendance marked today: {{ todays_att_marked }}</div>
+    </article>
+  </section>
+
+  <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+      <h3 class="mb-1">Teacher Home</h3>
+      <p class="text-muted mb-0">Today: {{ today }}</p>
+    </div>
+    <div class="form-actions">
+      <a class="btn btn-outline-primary" href="{% url 'academics:teacher_classes' %}">My classes</a>
+      <a class="btn-cozy" href="{% url 'academics:take_attendance_pick' %}">Take attendance</a>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="dashboard-panel">
+      <div class="panel-header">
+        <span>My lessons today</span>
+        <span class="pill">Timetable</span>
+      </div>
+      <div class="d-flex flex-column gap-3">
+        {% for e in entries %}
+          <div class="entry-card">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+              <div>
+                <div class="fw-semibold">{{ e.class_group }} · {{ e.subject }}</div>
+                <div class="text-muted small">
+                  {{ e.start_time }} – {{ e.end_time }}{% if e.room %} · Room {{ e.room }}{% endif %}
                 </div>
               </div>
+              <div class="d-flex gap-2">
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'academics:class_detail' e.class_group.id %}">Roster</a>
+                <a class="btn btn-sm btn-primary" href="/academics/attendance/take/mark/?class_group_id={{ e.class_group.id }}&date={{ today|date:'Y-m-d' }}">Attendance</a>
+              </div>
             </div>
-          {% empty %}
-            <div class="text-muted">No lessons scheduled for today.</div>
-          {% endfor %}
-        </div>
+          </div>
+        {% empty %}
+          <div class="placeholder-panel">
+            <span class="placeholder-bar"></span>
+            <span class="placeholder-bar short"></span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="dashboard-panel">
+      <div class="panel-header">
+        <span>Quick actions</span>
+        <span class="pill">Tools</span>
+      </div>
+      <div class="dashboard-actions">
+        <a class="quick-action-card" href="{% url 'academics:teacher_assessments' %}">
+          <span>📝</span>
+          <span>Assessments</span>
+          <small class="text-muted">View assessments</small>
+        </a>
+        <a class="quick-action-card" href="{% url 'academics:create_assessment' %}">
+          <span>➕</span>
+          <span>Create assessment</span>
+          <small class="text-muted">Add new test/project</small>
+        </a>
+        <a class="quick-action-card" href="{% url 'comms:inbox' %}">
+          <span>💬</span>
+          <span>Messages</span>
+          <small class="text-muted">Open inbox</small>
+        </a>
       </div>
     </div>
   </div>
 
-  <div class="col-12 col-lg-5">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="mb-3">Quick actions</h5>
-        <div class="d-grid gap-2">
-          <a class="btn btn-outline-primary" href="{% url 'academics:teacher_assessments' %}">Assessments</a>
-          <a class="btn btn-outline-primary" href="{% url 'academics:create_assessment' %}">Create assessment</a>
-          <a class="btn btn-outline-primary" href="{% url 'comms:inbox' %}">Messages</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 {% endblock %}

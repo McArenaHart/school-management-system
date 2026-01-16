@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Student · SMS{% endblock %}
+
+{% block content %}
+
+  <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+      <h4 class="mb-1">
+        {{ student.first_name }} {{ student.last_name }}
+        <small class="text-muted fw-normal">(ID: {{ student.student_id|default:student.student_number|default:"-" }})</small>
+      </h4>
+      <p class="text-muted mb-0">
+        Grade: {{ student.grade|default:"N/A" }} · Class: {{ student.classroom.name|default:"N/A" }}
+      </p>
+    </div>
+    <div class="form-actions">
+      <a class="btn btn-outline-secondary" href="{% url 'people:students_list' %}">Back</a>
+      <a class="btn-cozy" href="{% url 'people:student_edit' student.id %}">Edit</a>
+      {% if can_delete_student %}
+        <form method="post" action="{% url 'people:student_delete' student.id %}">
+          {% csrf_token %}
+          <button class="btn btn-outline-secondary" type="submit">Delete</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="dashboard-panel">
+    <div class="panel-header">
+      <span>Student overview</span>
+      <span class="pill">Summary</span>
+    </div>
+    <div class="dashboard-summary-list">
+      <div class="dashboard-summary-card">
+        <small class="text-muted">Student number</small>
+        <strong>{{ student.student_number|default:"N/A" }}</strong>
+      </div>
+      <div class="dashboard-summary-card">
+        <small class="text-muted">Guardians linked</small>
+        <strong>{{ student.guardians.count }}</strong>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
