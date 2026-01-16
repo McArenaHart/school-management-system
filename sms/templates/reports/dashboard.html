@@ -2,23 +2,22 @@
 {% load static %}
 {% block title %}Analytics Dashboard · SMS{% endblock %}
 
-{% block content %}
-
+{% block hero %}
   <section class="hero-panel hero-strip">
     <article class="hero-card">
-      <div class="icon">🎓</div>
+      <div class="icon">??</div>
       <div class="label">Students</div>
       <div class="value">{{ students_total }}</div>
       <div class="text-muted small mt-1">Active: {{ students_active }}</div>
     </article>
     <article class="hero-card">
-      <div class="icon">📋</div>
+      <div class="icon">??</div>
       <div class="label">Admissions</div>
       <div class="value">{{ admissions_new }}</div>
-      <div class="text-muted small mt-1">Reviewed {{ admissions_reviewed }} · Accepted {{ admissions_accepted }}</div>
+      <div class="text-muted small mt-1">Reviewed {{ admissions_reviewed }} ? Accepted {{ admissions_accepted }}</div>
     </article>
     <article class="hero-card">
-      <div class="icon">✅</div>
+      <div class="icon">?</div>
       <div class="label">Attendance</div>
       <div class="value">{{ att_total }}</div>
       <div class="text-muted small mt-1">
@@ -28,12 +27,15 @@
       </div>
     </article>
     <article class="hero-card">
-      <div class="icon">💰</div>
+      <div class="icon">??</div>
       <div class="label">Fees balance</div>
       <div class="value">{{ balance }}</div>
-      <div class="text-muted small mt-1">Invoiced {{ invoiced_sum }} · Paid {{ paid_sum }}</div>
+      <div class="text-muted small mt-1">Invoiced {{ invoiced_sum }} ? Paid {{ paid_sum }}</div>
     </article>
   </section>
+{% endblock %}
+
+{% block content %}
 
   <div class="mb-4">
     <h3 class="mb-1">Analytics Dashboard</h3>

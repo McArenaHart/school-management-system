@@ -1,26 +1,28 @@
 {% extends "base.html" %}
 {% block title %}Teacher Home · SMS{% endblock %}
 
-{% block content %}
-
+{% block hero %}
   <section class="hero-panel hero-strip">
     <article class="hero-card">
-      <div class="icon">📚</div>
+      <div class="icon">??</div>
       <div class="label">Lessons today</div>
       <div class="value">{{ entries|length }}</div>
     </article>
     <article class="hero-card">
-      <div class="icon">🏫</div>
+      <div class="icon">??</div>
       <div class="label">Classes</div>
       <div class="value">{{ classes|length }}</div>
     </article>
     <article class="hero-card">
-      <div class="icon">📝</div>
+      <div class="icon">??</div>
       <div class="label">Assessments</div>
       <div class="value">{{ assessments_count }}</div>
       <div class="text-muted small mt-1">Attendance marked today: {{ todays_att_marked }}</div>
     </article>
   </section>
+{% endblock %}
+
+{% block content %}
 
   <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
     <div>
