@@ -415,6 +415,7 @@ a {
   background: var(--surface);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-soft);
+  padding: 40px 48px;
 }
 
 .card {
@@ -428,6 +429,22 @@ a {
 .card-body {
   padding: 18px 22px;
   background: transparent;
+}
+
+.form-panel .form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.form-panel .form-group {
+  margin-bottom: 0;
+}
+
+.form-panel .form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
 }
 
 .card-body.p-0 {
